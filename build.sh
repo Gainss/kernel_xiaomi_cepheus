@@ -22,23 +22,3 @@ make mrproper && git reset --hard HEAD
 echo "=========================Build========================="
 make O=out CC="ccache clang" CXX="ccache clang++" CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld cepheus_defconfig
 make O=out CC="ccache clang" CXX="ccache clang++" CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld 2>&1 | tee kernel.log
-
-if [ ! -e $KERNEL_PATH/out/arch/arm64/boot/Image.gz-dtb ]; then
-    echo "=======================FAILED!!!======================="
-    rm -rf $ANYKERNEL_PATH $KERNEL_PATH/out/
-    make mrproper>/dev/null 2>&1
-    git reset --hard HEAD 2>&1
-    exit -1>/dev/null 2>&1
-fi
-
-echo "=========================Patch========================="
-rm -r $ANYKERNEL_PATH/modules $ANYKERNEL_PATH/patch $ANYKERNEL_PATH/ramdisk
-cp $KERNEL_PATH/anykernel.sh $ANYKERNEL_PATH/
-cp $KERNEL_PATH/out/arch/arm64/boot/Image.gz-dtb $ANYKERNEL_PATH/
-cd $ANYKERNEL_PATH
-zip -r $KERNEL_NAME *
-mv $KERNEL_NAME.zip $KERNEL_PATH/out/
-cd $KERNEL_PATH
-#rm -rf $CLANG_PATH
-rm -rf $ANYKERNEL_PATH
-echo $KERNEL_NAME.zip
